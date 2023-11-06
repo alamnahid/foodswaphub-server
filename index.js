@@ -77,7 +77,7 @@ async function run() {
         res.clearCookie('token', { maxAge: 0 }).send({ success: true })
     })
 
-    
+
     // add new food related api
     app.post('/food', async (req, res) => {
         const newfood = req.body;
@@ -88,11 +88,14 @@ async function run() {
 
       //http://localhost:5000/getallfood/v1?foodName=kacchi
       //http://localhost:5000/getallfood/v1?sortField=price&sortOrder=desc
+      
+      
       app.get('/getallfood/v1', async (req, res) => {
         
         let query = {}
         let sortObj = {}
         const foodName = req.query.foodName;
+        const donaremail = req.query.donaremail;
 
         const sortField = req.query.sortField
         const sortOrder = req.query.sortOrder
@@ -100,6 +103,9 @@ async function run() {
 
         if(foodName){
             query.foodName = foodName
+        }
+        if(donaremail){
+            query.donaremail = donaremail
         }
 
         if(sortField && sortOrder){
@@ -118,6 +124,13 @@ async function run() {
     //     res.send(result);
     //   })
 
+    app.get('/getallfood/v1/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }
+        const result = await foodCollection.findOne(query);
+        res.send(result);
+      })
+  
 
 
 
