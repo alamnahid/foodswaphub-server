@@ -35,11 +35,37 @@ async function run() {
         res.send(result);
       })
 
+      //http://localhost:5000/getallfood/v1?foodName=kacchi
+      //http://localhost:5000/getallfood/v1?sortField=price&sortOrder=desc
       app.get('/getallfood/v1', async (req, res) => {
-        const cursor = foodCollection.find();
+        
+        let query = {}
+        let sortObj = {}
+        const foodName = req.query.foodName;
+
+        const sortField = req.query.sortField
+        const sortOrder = req.query.sortOrder
+
+
+        if(foodName){
+            query.foodName = foodName
+        }
+
+        if(sortField && sortOrder){
+            sortObj[sortField] = sortOrder
+        }
+
+
+        const cursor = foodCollection.find(query).sort(sortObj);
         const result = await cursor.toArray();
         res.send(result);
       })
+
+    //   app.get('/getallfood/v1', async (req, res) => {
+    //     const cursor = foodCollection.find();
+    //     const result = await cursor.toArray();
+    //     res.send(result);
+    //   })
 
 
 
