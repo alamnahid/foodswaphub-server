@@ -35,6 +35,14 @@ async function run() {
         res.send(result);
       })
 
+      app.get('/getallfood/v1', async (req, res) => {
+        const cursor = foodCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      })
+
+
+
 
 
     // await client.db("admin").command({ ping: 1 });
