@@ -115,6 +115,9 @@ async function run() {
 
 
       const cursor = foodCollection.find(query).sort(sortObj);
+      // const cursor = foodCollection.find(query);
+      // cursor.map(item => ({ ...item, foodquantity: parseFloat(item.foodquantity) }));
+      // cursor.sort(sortObj)
       const result = await cursor.toArray();
       res.send(result);
     })
@@ -129,6 +132,31 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await foodCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.put('/getallfood/v1/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatedproduct = req.body;
+
+      const product = {
+        $set: {
+          foodName: updatedproduct.foodName,
+          foodImage: updatedproduct.foodImage,
+          foodquantity: updatedproduct.foodquantity,
+          pickuplocation: updatedproduct.pickuplocation,
+          expiredate: updatedproduct.expiredate,
+          foodstatus: updatedproduct.foodstatus,
+          donarname: updatedproduct.donarname,
+          donarimage: updatedproduct.donarimage,
+          donaremail: updatedproduct.donaremail,
+          additionalnotes: updatedproduct.additionalnotes
+        }
+      }
+
+      const result = await foodCollection.updateOne(filter, product, options);
       res.send(result);
     })
 
@@ -153,6 +181,23 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/foodrequestcollection/v1', async (req, res) => {
+
+      let query = {}
+      
+      const foodId = req.query.foodId;
+      const useremail = req.query.useremail;
+      if (foodId) {
+        query.foodId = foodId
+      }
+      if (useremail) {
+        query.useremail = useremail
+      }
+      const cursor = foodrequestcollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
 
 
 
@@ -172,9 +217,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Brand Shop server is running')
+  res.send('food donation server is running')
 })
 
 app.listen(port, () => {
-  console.log(`Brand Shop is running on port: ${port}`)
+  console.log(`food donation is running on port: ${port}`)
 })
