@@ -2,16 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors({
   origin: [
-    'http://localhost:5173',
-  ],
+    'https://share2savor.web.app',
+    'https://share2savor.firebaseapp.com'
+],
   credentials: true
 }));
 app.use(express.json());
@@ -68,6 +69,7 @@ async function run() {
         httpOnly: true,
         secure: true,
         sameSite: 'none'
+       
       })
         .send({ success: true });
     })
@@ -80,7 +82,7 @@ async function run() {
 
 
     // add new food related api
-    app.post('/food', async (req, res) => {
+    app.post('/food', verifyToken, async (req, res) => {
       const newfood = req.body;
       console.log(newfood);
       const result = await foodCollection.insertOne(newfood);
@@ -123,14 +125,14 @@ async function run() {
     //     res.send(result);
     //   })
 
-    app.get('/getallfood/v1/:id', async (req, res) => {
+    app.get('/getallfood/v1/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await foodCollection.findOne(query);
       res.send(result);
     })
 
-    app.put('/getallfood/v1/:id', async (req, res) => {
+    app.put('/getallfood/v1/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
       const options = { upsert: true };
@@ -191,7 +193,7 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/foodrequestcollection/v1', async (req, res) => {
+    app.get('/foodrequestcollection/v1', verifyToken, async (req, res) => {
 
       let query = {}
       
