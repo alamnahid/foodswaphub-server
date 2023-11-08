@@ -89,8 +89,6 @@ async function run() {
 
     //http://localhost:5000/getallfood/v1?foodName=kacchi
     //http://localhost:5000/getallfood/v1?sortField=price&sortOrder=desc
-
-
     app.get('/getallfood/v1', async (req, res) => {
 
       let query = {}
@@ -115,9 +113,6 @@ async function run() {
 
 
       const cursor = foodCollection.find(query).sort(sortObj);
-      // const cursor = foodCollection.find(query);
-      // cursor.map(item => ({ ...item, foodquantity: parseFloat(item.foodquantity) }));
-      // cursor.sort(sortObj)
       const result = await cursor.toArray();
       res.send(result);
     })
@@ -211,6 +206,21 @@ async function run() {
       const cursor = foodrequestcollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    })
+
+    app.patch('/foodrequestcollection/v1/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const updatedBooking = req.body;
+
+      const updateDoc = {
+        $set: {
+          foodstatus: updatedBooking.foodstatus
+        },
+      }
+      const result = await foodrequestcollection.updateOne(filter, updateDoc)
+      res.send(result)
+      
     })
 
 
